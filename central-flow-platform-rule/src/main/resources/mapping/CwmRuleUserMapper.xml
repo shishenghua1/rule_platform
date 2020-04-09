@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.boco.eoms.rule.cwmsysruleuser.mapper.CwmRuleUserMapper">
+	
+	<resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysruleuser.model.CwmRuleUser" >
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="gender" property="gender" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+		<result column="created_user_id" property="createdUserId" jdbcType="VARCHAR" />
+		<result column="app_Id" property="appId" jdbcType="VARCHAR" />
+		<result column="module_Id" property="moduleId" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 新增 -->
+	<insert id="addSystemUser" parameterType="com.boco.eoms.rule.cwmsysruleuser.model.CwmRuleUser" >
+		insert into CWM_RULE_USER (
+		id,
+		user_id,
+		user_name,
+		password,
+		mobile,
+		gender,
+		email,
+		status,
+		created_time,
+		created_user_id,
+		app_Id,
+		module_Id
+		) 
+		values (
+		#{id,jdbcType=VARCHAR},
+		#{userId,jdbcType=VARCHAR}, 
+		#{userName,jdbcType=VARCHAR}, 
+		#{password,jdbcType=VARCHAR}, 
+		#{mobile,jdbcType=VARCHAR}, 
+		#{gender,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR}, 
+		#{status,jdbcType=VARCHAR},
+		#{createdTime,jdbcType=TIMESTAMP},  
+		#{createdUserId,jdbcType=VARCHAR}, 
+		#{appId,jdbcType=VARCHAR}),
+		#{moduleId,jdbcType=VARCHAR})
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="updateSystemUser" parameterType="com.boco.eoms.rule.cwmsysruleuser.model.CwmRuleUser" >
+		update CWM_RULE_USER set 
+		user_name = #{userName,jdbcType=VARCHAR},
+		password = #{password,jdbcType=VARCHAR},
+		mobile = #{mobile,jdbcType=VARCHAR},
+		gender = #{gender,jdbcType=VARCHAR},
+		email = #{email,jdbcType=VARCHAR},
+		status = #{status,jdbcType=VARCHAR},
+		lasted_time = #{lastedTime,jdbcType=TIMESTAMP},  
+		lasted_user_id = #{lastedUserId,jdbcType=VARCHAR}, 
+		app_Id = #{appId,jdbcType=VARCHAR},
+		module_Id = #{moduleId,jdbcType=VARCHAR} 
+		where id=#{id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 根据账户删除 -->
+	<update id="removeSystemUser" parameterType="com.boco.eoms.rule.cwmsysruleuser.model.CwmRuleUser"  >
+		update CWM_RULE_USER set status = 'DELETED' where user_id=#{userId,jdbcType=VARCHAR} and status != 'DELETED'
+	</update>  
+	<!-- 根据账户禁用 -->
+	<update id="disabledSystemUser" parameterType="com.boco.eoms.rule.cwmsysruleuser.model.CwmRuleUser"  >
+		update CWM_RULE_USER set status = 'DISABLED' where user_id=#{userId,jdbcType=VARCHAR} and status != 'DELETED'
+	</update> 
+	 
+	<!-- 根据账户启用 -->
+	<update id="playSystemUser" parameterType="com.boco.eoms.rule.cwmsysruleuser.model.CwmRuleUser"  >
+		update CWM_RULE_USER set status = 'NORMAL' where user_id=#{userId,jdbcType=VARCHAR} and status != 'DELETED'
+	</update>  
+	
+	<!-- 根据条件查询 -->
+	<select id="showListPage"  parameterType="java.util.Map"  resultMap="BaseResultMap">
+		select * from  CWM_RULE_USER 
+		where ${condition} and status != 'DELETED'
+		order by ${sortName} ${sortOrder}
+	</select>
+	<!-- 验证账号唯一 -->
+	<select id="checkUserId" parameterType="java.lang.String"  resultType="java.lang.String">
+		select user_id from  CWM_RULE_USER where status != 'DELETED' and user_id = #{userId,jdbcType=VARCHAR}
+	</select>
+	<!-- 根据id查询 -->
+	<select id="querySystemUserone"  parameterType="java.lang.String"  resultMap="BaseResultMap">
+		select * from  CWM_RULE_USER 
+		where id = #{id,jdbcType=VARCHAR} and status != 'DELETED'
+		order by created_time desc
+	</select>
+	
+	<!-- 登陆验证 -->
+	<select id="userLogin" parameterType="java.util.HashMap"  resultType="java.util.HashMap">
+        select * from CWM_RULE_USER where status != 'DELETED' and user_id = #{id} and password = #{pw}
+			
+	</select>
+	<!-- 根据账户获取姓名 -->
+	<select id="getUserNameByUserId" parameterType="java.lang.String"  resultType="java.lang.String">
+        select user_name from CWM_RULE_USER where status != 'DELETED' and user_id = #{userId,jdbcType=VARCHAR}
+			
+	</select>
+	<!-- 根据账户查询 -->
+	<select id="querysystemUserByUid"  parameterType="java.lang.String"  resultMap="BaseResultMap">
+		select * from  CWM_RULE_USER 
+		where user_id = #{userId,jdbcType=VARCHAR} and status != 'DELETED'
+	</select>
+	<select id="querySystemUserBycondtion"  parameterType="java.lang.String"  resultType="java.lang.Integer">
+		select count(id) 
+		from CWM_RULE_USER task where ${condition} and status != 'DELETED'
+		order by created_time desc
+	</select>
+	<!-- 根据条件查询 -->
+	<select id="querySystemUserList"  parameterType="java.util.Map"  resultMap="BaseResultMap">
+		select * from  CWM_RULE_USER 
+		where ${condition} and status != 'DELETED'
+		order by created_time desc
+	</select>
+</mapper>

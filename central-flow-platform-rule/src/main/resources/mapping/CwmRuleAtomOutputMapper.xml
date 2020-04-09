@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysruleatomoutput.mapper.CwmRuleAtomOutputMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysruleatomoutput.model.CwmRuleAtomOutput">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="ATOM_ID" jdbcType="VARCHAR" property="atomId" />
+    <result column="ATOM_INPUT_ID" jdbcType="VARCHAR" property="atomInputId" />
+    <result column="ATOM_OUTPUT_TYPE" jdbcType="VARCHAR" property="atomOutputType" />
+    <result column="PARAM_RESULT" jdbcType="VARCHAR" property="paramResult" />
+    <result column="PARAM_RESULT_DESCRIPTION" jdbcType="VARCHAR" property="paramResultDescription" />
+    <result column="PARAM_INTER_EN_NAME" jdbcType="VARCHAR" property="paramInterEnName" />
+    <result column="PARAM_INTER_CN_NAME" jdbcType="VARCHAR" property="paramInterCnName" />
+    <result column="ORDER_BY" jdbcType="DECIMAL" property="orderBy" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, ATOM_ID, ATOM_INPUT_ID, ATOM_OUTPUT_TYPE, PARAM_RESULT, PARAM_RESULT_DESCRIPTION, 
+    PARAM_INTER_EN_NAME, PARAM_INTER_CN_NAME, ORDER_BY, DELETED, CREATE_USER_ID, CREATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_ATOM_OUTPUT
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByAtomId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	 select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_ATOM_OUTPUT
+    where DELETED!='1' and ATOM_ID = #{atomId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from CWM_RULE_ATOM_OUTPUT
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysruleatomoutput.model.CwmRuleAtomOutput">
+    insert into CWM_RULE_ATOM_OUTPUT (ID, ATOM_ID, ATOM_INPUT_ID, 
+      ATOM_OUTPUT_TYPE, PARAM_RESULT, PARAM_RESULT_DESCRIPTION, 
+      PARAM_INTER_EN_NAME, PARAM_INTER_CN_NAME, ORDER_BY, 
+      DELETED, CREATE_USER_ID, CREATE_TIME
+      )
+    values (#{id,jdbcType=VARCHAR}, #{atomId,jdbcType=VARCHAR}, #{atomInputId,jdbcType=VARCHAR}, 
+      #{atomOutputType,jdbcType=VARCHAR}, #{paramResult,jdbcType=VARCHAR}, #{paramResultDescription,jdbcType=VARCHAR}, 
+      #{paramInterEnName,jdbcType=VARCHAR}, #{paramInterCnName,jdbcType=VARCHAR}, #{orderBy,jdbcType=DECIMAL}, 
+      #{deleted,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="batchInsert" parameterType="java.util.List" >
+	 insert into CWM_RULE_ATOM_OUTPUT (ID, ATOM_ID, ATOM_INPUT_ID, 
+      ATOM_OUTPUT_TYPE, PARAM_RESULT, PARAM_RESULT_DESCRIPTION, 
+      PARAM_INTER_EN_NAME, PARAM_INTER_CN_NAME, ORDER_BY, 
+      DELETED, CREATE_USER_ID, CREATE_TIME
+      )
+	 <foreach  collection="list" item="item"   separator=" union all ">   
+		select sys_guid(), #{item.atomId,jdbcType=VARCHAR}, #{item.atomInputId,jdbcType=VARCHAR}, 
+      #{item.atomOutputType,jdbcType=VARCHAR}, #{item.paramResult,jdbcType=VARCHAR}, #{item.paramResultDescription,jdbcType=VARCHAR}, 
+      #{item.paramInterEnName,jdbcType=VARCHAR}, #{item.paramInterCnName,jdbcType=VARCHAR}, #{item.orderBy,jdbcType=DECIMAL}, 
+      0, #{item.createUserId,jdbcType=VARCHAR}, sysdate
+	  from  dual   
+	</foreach>  
+  </insert>
+  <update id="batchUpdate" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update CWM_RULE_ATOM_OUTPUT
+            <set>
+              ATOM_ID = #{item.atomId,jdbcType=VARCHAR},
+		      ATOM_INPUT_ID = #{item.atomInputId,jdbcType=VARCHAR},
+		      ATOM_OUTPUT_TYPE = #{item.atomOutputType,jdbcType=VARCHAR},
+		      PARAM_RESULT = #{item.paramResult,jdbcType=VARCHAR},
+		      PARAM_RESULT_DESCRIPTION = #{item.paramResultDescription,jdbcType=VARCHAR},
+		      PARAM_INTER_EN_NAME = #{item.paramInterEnName,jdbcType=VARCHAR},
+		      PARAM_INTER_CN_NAME = #{item.paramInterCnName,jdbcType=VARCHAR},
+		      ORDER_BY = #{item.orderBy,jdbcType=DECIMAL}
+            </set>
+       where ID = #{item.id,jdbcType=VARCHAR}
+        </foreach>
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysruleatomoutput.model.CwmRuleAtomOutput">
+    update CWM_RULE_ATOM_OUTPUT
+    set ATOM_ID = #{atomId,jdbcType=VARCHAR},
+      ATOM_INPUT_ID = #{atomInputId,jdbcType=VARCHAR},
+      ATOM_OUTPUT_TYPE = #{atomOutputType,jdbcType=VARCHAR},
+      PARAM_RESULT = #{paramResult,jdbcType=VARCHAR},
+      PARAM_RESULT_DESCRIPTION = #{paramResultDescription,jdbcType=VARCHAR},
+      PARAM_INTER_EN_NAME = #{paramInterEnName,jdbcType=VARCHAR},
+      PARAM_INTER_CN_NAME = #{paramInterCnName,jdbcType=VARCHAR},
+      ORDER_BY = #{orderBy,jdbcType=DECIMAL},
+      DELETED = #{deleted,jdbcType=VARCHAR},
+      CREATE_USER_ID = #{createUserId,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

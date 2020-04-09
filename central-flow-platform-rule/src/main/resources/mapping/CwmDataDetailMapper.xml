@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysdatadetail.mapper.CwmDataDetailMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysdatadetail.model.CwmDataDetail">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="DATA_MODULE_ID" jdbcType="VARCHAR" property="dataModuleId" />
+    <result column="FIELD_CN_NAME" jdbcType="VARCHAR" property="fieldCnName" />
+    <result column="FIELD_EN_NAME" jdbcType="VARCHAR" property="fieldEnName" />
+    <result column="FIELD_TYPE" jdbcType="VARCHAR" property="fieldType" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="FIELD_CALCULATE" jdbcType="VARCHAR" property="fieldCalculate" />
+    <result column="FIELD_CALCULATE_DESCRIBE" jdbcType="VARCHAR" property="fieldCalculateDescribe" />
+    <result column="FIELD_CALCULATE_JSON" jdbcType="VARCHAR" property="fieldCalculateJson"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, data_module_id, field_cn_name, field_en_name, field_type,  deleted, 
+    create_time, create_user_id,field_calculate,field_calculate_describe,field_calculate_json
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cwm_rule_data_detail
+    where id = #{id,jdbcType=VARCHAR} and deleted!='1'
+  </select>
+  <select id="getDataDetailByDataModuleId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_DATA_DETAIL
+    where DATA_MODULE_ID = #{dataModuleId,jdbcType=VARCHAR} 
+    and DELETED='0' order by create_time desc
+  </select>
+
+  <select id="selectByModuleId" parameterType="java.lang.String" resultType="String">
+    select field_calculate from cwm_rule_data_detail where data_module_id = #{dataModuleId,jdbcType=VARCHAR}
+    and DELETED='0' and instr(field_type,'变量')>0
+  </select>
+
+  <select id="selectByFieldCnName" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_DATA_DETAIL
+    where  deleted !='1' and DATA_MODULE_ID = #{dataModuleId,jdbcType=VARCHAR}
+    <if test="fieldCnName != null">
+        and FIELD_CN_NAME like '%'||#{fieldCnName,jdbcType=VARCHAR}||'%'
+    </if>
+    order by create_time
+  </select>
+  
+  <select id="getDataDetailByModuleIdAndEnName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select d.* from cwm_rule_data_module m,cwm_rule_data_detail d
+	where m.id = d.data_module_id 
+	and m.module_id = #{moduleId,jdbcType=VARCHAR}
+	and d.FIELD_EN_NAME = #{fieldEnName,jdbcType=VARCHAR}
+  </select>
+  
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String">
+    update CWM_RULE_DATA_DETAIL set deleted =1
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysdatadetail.model.CwmDataDetail">
+    insert into cwm_rule_data_detail (id, data_module_id, field_cn_name,
+      field_en_name, field_type,
+      deleted, create_time, create_user_id,field_calculate,field_calculate_describe,field_calculate_json
+      )
+    values (#{id,jdbcType=VARCHAR}, #{dataModuleId,jdbcType=VARCHAR}, #{fieldCnName,jdbcType=VARCHAR}, 
+      #{fieldEnName,jdbcType=VARCHAR}, #{fieldType,jdbcType=VARCHAR},  0,
+      sysdate, #{createUserId,jdbcType=VARCHAR},#{fieldCalculate,jdbcType=VARCHAR},#{fieldCalculateDescribe,jdbcType=VARCHAR},
+      #{fieldCalculateJson,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="batchInsert" parameterType="java.util.List" >
+	 insert into cwm_rule_data_detail   (id, data_module_id, field_cn_name,
+      field_en_name, field_type, deleted, create_time, create_user_id,
+      field_calculate,field_calculate_describe,field_calculate_json)
+	 <foreach  collection="list" item="item"   separator=" union all ">   
+		select  sys_guid(), #{item.dataModuleId,jdbcType=VARCHAR}, #{item.fieldCnName,jdbcType=VARCHAR},
+      #{item.fieldEnName,jdbcType=VARCHAR}, #{item.fieldType,jdbcType=VARCHAR}, 
+      0, sysdate, #{item.createUserId,jdbcType=VARCHAR},#{item.fieldCalculate,jdbcType=VARCHAR},
+      #{item.fieldCalculateDescribe,jdbcType=VARCHAR},#{item.fieldCalculateJson,jdbcType=VARCHAR}
+	  from  dual   
+	</foreach>  
+  </insert>
+
+  <update id="batchUpdate" parameterType="java.util.List">
+    update cwm_rule_data_detail
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="data_module_id =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.dataModuleId!=null">
+            when id=#{item.id} then #{item.dataModuleId}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="field_cn_name =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.fieldCnName!=null">
+            when id=#{item.id} then #{item.fieldCnName}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="field_en_name =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.fieldEnName!=null">
+            when id=#{item.id} then #{item.fieldEnName}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="field_type =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.fieldType!=null">
+            when id=#{item.id} then #{item.fieldType}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_user_id =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.createUserId!=null">
+            when id=#{item.id} then #{item.createUserId}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="field_calculate =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.fieldCalculate!=null">
+            when id=#{item.id} then #{item.fieldCalculate}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="field_calculate_describe =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.fieldCalculateDescribe!=null">
+            when id=#{item.id} then #{item.fieldCalculateDescribe}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="field_calculate_json =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.fieldCalculateJson!=null">
+            when id=#{item.id} then #{item.fieldCalculateJson}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    <where>
+      <foreach collection="list" separator="or" item="item">
+        id=#{item.id}
+      </foreach>
+    </where>
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysdatadetail.model.CwmDataDetail">
+    update CWM_RULE_DATA_DETAIL
+    <set>
+      <if test="dataModuleId != null and dataModuleId != ''">
+        DATA_MODULE_ID = #{dataModuleId,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldCnName != null and fieldCnName !=''">
+        FIELD_CN_NAME = #{fieldCnName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldEnName != null and fieldEnName !=''">
+        FIELD_EN_NAME = #{fieldEnName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldType != null and fieldType !=''">
+        FIELD_TYPE = #{fieldType,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null and createUserId!=''">
+        CREATE_USER_ID = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldCalculate != null and fieldCalculate !=''">
+        FIELD_CALCULATE = #{fieldCalculate,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldCalculateDescribe != null and fieldCalculateDescribe !=''">
+        FIELD_CALCULATE_DESCRIBE = #{fieldCalculateDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldCalculateJson != null and fieldCalculateJson !=''">
+        FIELD_CALCULATE_JSON = #{fieldCalculateJson,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

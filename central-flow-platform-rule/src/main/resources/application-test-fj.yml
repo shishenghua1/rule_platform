@@ -1,0 +1,36 @@
+#基础服务模块
+baseServer:
+  ip: 10.210.6.49
+  port: 8081
+  version: v1
+  
+#oauth2服务模块
+oauth2Server:
+  ip: 10.210.6.49
+  port: 8089
+  version: v1
+  client_id_value_pwd_mod: client_1
+  client_secret_value_pwd_mod: 123456
+  
+#AI服务模块
+AIServer: 
+  ip: 10.210.6.42
+  port: 8383
+  
+#规则网关模块
+ruleProjectServer: 
+  ip: localhost
+  port: 8006 
+  
+spring:
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@10.210.3.203:1503/cmfjeomsDB
+    username: eomst4user
+    password: Tv_Aoyun_08
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+
+#日志输出位置
+logging:
+  path: /opt/central-flow-platform/logs

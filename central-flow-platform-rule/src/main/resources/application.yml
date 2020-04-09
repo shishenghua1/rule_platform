@@ -1,0 +1,59 @@
+server:
+  port: 8095
+  tomcat:
+      min-spare-threads: 50
+      max-threads: 200
+      uri-encoding: UTF-8
+  connection-timeout: 30000
+spring:
+  #切换环境
+  profiles:
+      active: dev
+  session:
+      store-type: none
+  http:
+      encoding:
+          force: true
+          charset: UTF-8
+          enabled: true
+
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
+  #type-aliases-package: com.*.model
+  type-aliases-package: com.boco.eoms.rule.*.model
+
+#mapper
+#mappers 多个接口时逗号隔开
+#mapper:
+#  mappers: com.boco.eoms.base.commonmybatis.basemapper.BaseMapper
+#  not-empty: false
+#  identity: MYSQL
+
+#pagehelper
+pagehelper:
+  helperDialect: oracle
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+  
+logging:
+  level:
+     com.boco.eoms.form.cwmsysform.mapper : debug
+     com.boco.eoms.form.cwmsysformfield.mapper : debug
+     com.boco.eoms.form.cwmsysformlimit.mapper : debug
+     com.boco.eoms.form.cwmsysformtemplate.mapper : debug
+
+#字段类型归类
+fieldType:
+  number: 数字常量,数字变量,计算变量,随机数变量
+  character: 字符常量,字符变量
+  time: 时间常量,时间变量
+  
+#福建固定输入字段
+filedsJson: "{'sheetId':'工单流水号','title':'工单主题','mainId':'工单主键'}"
+
+#规则执行日志记录开关
+excuteLogFlag: true
+
+#Ai相似度规则名称
+aisimilarName: AI文本相似度检测

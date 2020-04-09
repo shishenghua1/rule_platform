@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysrulegrouprel.mapper.CwmRuleGroupRelMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysrulegrouprel.model.CwmRuleGroupRel">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="PARENT_NODE_ID" jdbcType="VARCHAR" property="parentNodeId" />
+    <result column="NODE_TYPE" jdbcType="VARCHAR" property="nodeType" />
+    <result column="ORDER_BY" jdbcType="DECIMAL" property="orderBy" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="RULE_ID_REL" jdbcType="VARCHAR" property="ruleIdRel" />
+    <result column="RULE_INFO_REL" jdbcType="VARCHAR" property="ruleInfoRel" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, PARENT_NODE_ID, NODE_TYPE,ORDER_BY, CREATE_TIME, RULE_ID_REL, RULE_INFO_REL
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUP_REL
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByGroupId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cwm_rule_group_rel 
+    where parent_node_id = #{parentNodeId,jdbcType=VARCHAR} order by order_by
+  </select>
+
+  <select id="selectRecursionByGroupId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from CWM_RULE_GROUP_REL
+	start with parent_node_id=#{parentNodeId,jdbcType=VARCHAR} connect by prior rule_id_rel=parent_node_id
+	order by ORDER_BY
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from CWM_RULE_GROUP_REL
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <delete id="deleteByGroupId" parameterType="java.lang.String">
+    delete from cwm_rule_group_rel
+    where id in (select id from CWM_RULE_GROUP_REL
+    start with parent_node_id=#{parentNodeId,jdbcType=VARCHAR} connect by prior rule_id_rel=parent_node_id)
+  </delete>
+
+
+  <delete id="batchDeleteById" parameterType="java.util.List">
+    delete from cwm_rule_group_rel
+    where id in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysrulegrouprel.model.CwmRuleGroupRel">
+    insert into cwm_rule_group_rel (id, parent_node_id, node_type,order_by, create_time, rule_id_rel, rule_info_rel
+      )
+    values (#{id,jdbcType=VARCHAR}, #{parentNodeId,jdbcType=VARCHAR}, #{nodeType,jdbcType=VARCHAR}, 
+      #{orderBy,jdbcType=DECIMAL}, sysdate, #{ruleIdRel,jdbcType=VARCHAR}, #{ruleInfoRel,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into CWM_RULE_GROUP_REL (id, parent_node_id, node_type,order_by, create_time, rule_id_rel, rule_info_rel)
+    <foreach  collection="list" item="item"   separator=" union all ">   
+   			select
+   			sys_guid(), 
+   			#{item.parentNodeId}, 
+   			#{item.nodeType}, 
+   			#{item.orderBy}, 
+   			sysdate, 
+      		#{item.ruleIdRel}, 
+      		#{item.ruleInfoRel} from dual
+    </foreach>
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysrulegrouprel.model.CwmRuleGroupRel">
+    update cwm_rule_group_rel
+    set parent_node_id = #{parentNodeId,jdbcType=VARCHAR},
+      node_type = #{nodeType,jdbcType=VARCHAR},
+      order_by = #{orderBy,jdbcType=VARCHAR},
+      rule_id_rel = #{ruleIdRel,jdbcType=DECIMAL},
+      rule_info_rel = #{ruleInfoRel,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectGroupRuleBGroupId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUP_REL
+    where GROUP_ID=#{groupId} 
+    and RULE_TYPE_REL='ruleGroup' 
+  </select>
+  
+  <select id="selectRelByParentNodeId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUP_REL
+    where PARENT_NODE_ID=#{parentNodeId} 
+    order by ORDER_BY 
+  </select>
+  
+  <select id="selectEnableRelByParentNodeId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUP_REL
+    where PARENT_NODE_ID=#{parentNodeId} and STATUS = 'enable' 
+    order by ORDER_BY 
+  </select>
+  
+  <select id="getAllRuleGroupsFromRel" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" /> 
+	from CWM_RULE_GROUP_REL where node_type = 'ruleGroup'
+	start with parent_node_id=#{parentNodeId} connect by prior rule_id_rel=parent_node_id
+  </select>
+  
+</mapper>

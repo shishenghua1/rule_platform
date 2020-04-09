@@ -1,0 +1,38 @@
+#基础服务模块
+baseServer:
+  ip: 10.10.2.17
+  port: 8081
+  version: v1
+  
+#oauth2服务模块
+oauth2Server:
+  ip: 10.91.0.122
+  port: 8089
+  version: v1
+  client_id_value_pwd_mod: client_1
+  client_secret_value_pwd_mod: 123456
+
+
+#AI服务模块
+AIServer: 
+  ip: 103.46.128.41
+  port: 54292
+  
+#规则网关模块
+ruleProjectServer: 
+  ip: localhost
+  port: 8006 
+  
+  
+spring:
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@10.91.0.101:1521:helowin
+    username: P_EOMS_CENTRAL_WORKFLOW_DEV
+    password: P_EOMS_CENTRAL_WORKFLOW_DEV
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+
+#日志输出位置
+logging:
+  path: /usr/local/central-flow-platform-rule/logs

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysrulegroupoutputparams.mapper.CwmRuleGroupOutputParamsMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysrulegroupoutputparams.model.CwmRuleGroupOutputParams">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="GROUP_OUTPUT_PARAMS_ID" jdbcType="VARCHAR" property="groupOutputParamsId" />
+    <result column="OUTPUT_EN_PARAM_1" jdbcType="VARCHAR" property="outputEnParam1" />
+    <result column="OUTPUT_CN_PARAM_1" jdbcType="VARCHAR" property="outputCnParam1" />
+    <result column="OUTPUT_PARAM_TYPE_1" jdbcType="VARCHAR" property="outputParamType1" />
+    <result column="OPERATOR_1" jdbcType="VARCHAR" property="operator1" />
+    <result column="OUTPUT_EN_PARAM_2" jdbcType="VARCHAR" property="outputEnParam2" />
+    <result column="OUTPUT_CN_PARAM_2" jdbcType="VARCHAR" property="outputCnParam2" />
+    <result column="OUTPUT_PARAM_TYPE_2" jdbcType="VARCHAR" property="outputParamType2" />
+    <result column="OPERATOR_2" jdbcType="VARCHAR" property="operator2" />
+    <result column="OUTPUT_EN_PARAM_3" jdbcType="VARCHAR" property="outputEnParam3" />
+    <result column="OUTPUT_CN_PARAM_3" jdbcType="VARCHAR" property="outputCnParam3" />
+    <result column="OUTPUT_PARAM_TYPE_3" jdbcType="VARCHAR" property="outputParamType3" />
+    <result column="OUTPUT_PARAM_ORIGIN_1" jdbcType="VARCHAR" property="outputParamOrigin1" />
+    <result column="OUTPUT_PARAM_ORIGIN_2" jdbcType="VARCHAR" property="outputParamOrigin2" />
+    <result column="OUTPUT_PARAM_ORIGIN_3" jdbcType="VARCHAR" property="outputParamOrigin3" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, GROUP_OUTPUT_PARAMS_ID, OUTPUT_EN_PARAM_1, OUTPUT_CN_PARAM_1, OUTPUT_PARAM_TYPE_1, 
+    OPERATOR_1, OUTPUT_EN_PARAM_2, OUTPUT_CN_PARAM_2, OUTPUT_PARAM_TYPE_2, OPERATOR_2, 
+    OUTPUT_EN_PARAM_3, OUTPUT_CN_PARAM_3, OUTPUT_PARAM_TYPE_3
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUP_OUTPUT_PARAMS
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByParamsId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from CWM_RULE_GROUP_OUTPUT_PARAMS
+    where group_output_params_id = #{groupOutputParamsId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByParamsIds" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from cwm_rule_group_output_params
+    where group_output_params_id in
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+
+  <select id="getParamsByGroupId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select p.* from 
+	CWM_RULE_GROUP_OUTPUT_PARAMS p,
+	CWM_RULE_GROUP_OUTPUT o
+	where 
+	o.group_output_params_id = p.group_output_params_id 
+	and o.group_id = #{groupId,jdbcType=VARCHAR} 
+  </select>
+
+  <select id="getParamsByGroupIdAndResult" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select p.* from 
+	CWM_RULE_GROUP_OUTPUT_PARAMS p,
+	CWM_RULE_GROUP_OUTPUT o
+	where 
+	o.group_output_params_id = p.group_output_params_id 
+	and o.group_id = #{groupId,jdbcType=VARCHAR} 
+	and o.GROUP_OUTPUT_RESULT = #{groupOutputResult,jdbcType=VARCHAR}  
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from CWM_RULE_GROUP_OUTPUT_PARAMS
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <delete id="delByParamId">
+    delete from CWM_RULE_GROUP_OUTPUT_PARAMS
+    where group_output_params_id in
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysrulegroupoutputparams.model.CwmRuleGroupOutputParams">
+    insert into CWM_RULE_GROUP_OUTPUT_PARAMS (ID, GROUP_OUTPUT_PARAMS_ID, OUTPUT_EN_PARAM_1, 
+      OUTPUT_CN_PARAM_1, OUTPUT_PARAM_TYPE_1, OPERATOR_1, 
+      OUTPUT_EN_PARAM_2, OUTPUT_CN_PARAM_2, OUTPUT_PARAM_TYPE_2, 
+      OPERATOR_2, OUTPUT_EN_PARAM_3, OUTPUT_CN_PARAM_3, 
+      OUTPUT_PARAM_TYPE_3,OUTPUT_PARAM_ORIGIN_1,OUTPUT_PARAM_ORIGIN_2,OUTPUT_PARAM_ORIGIN_3)
+    values (#{id,jdbcType=VARCHAR}, #{groupOutputParamsId,jdbcType=VARCHAR}, #{outputEnParam1,jdbcType=VARCHAR}, 
+      #{outputCnParam1,jdbcType=VARCHAR}, #{outputParamType1,jdbcType=VARCHAR}, #{operator1,jdbcType=VARCHAR}, 
+      #{outputEnParam2,jdbcType=VARCHAR}, #{outputCnParam2,jdbcType=VARCHAR}, #{outputParamType2,jdbcType=VARCHAR}, 
+      #{operator2,jdbcType=VARCHAR}, #{outputEnParam3,jdbcType=VARCHAR}, #{outputCnParam3,jdbcType=VARCHAR}, 
+      #{outputParamType3,jdbcType=VARCHAR},#{outputParamOrigin1,jdbcType=VARCHAR},#{outputParamOrigin2,jdbcType=VARCHAR},
+      #{outputParamOrigin3,jdbcType=VARCHAR})
+  </insert>
+
+  <insert id="batchInsert" parameterType="java.util.List" >
+	 insert into CWM_RULE_GROUP_OUTPUT_PARAMS (ID, GROUP_OUTPUT_PARAMS_ID, OUTPUT_EN_PARAM_1, 
+      OUTPUT_CN_PARAM_1, OUTPUT_PARAM_TYPE_1, OPERATOR_1, 
+      OUTPUT_EN_PARAM_2, OUTPUT_CN_PARAM_2, OUTPUT_PARAM_TYPE_2, 
+      OPERATOR_2, OUTPUT_EN_PARAM_3, OUTPUT_CN_PARAM_3, 
+      OUTPUT_PARAM_TYPE_3,OUTPUT_PARAM_ORIGIN_1,OUTPUT_PARAM_ORIGIN_2,OUTPUT_PARAM_ORIGIN_3)
+	 <foreach  collection="list" item="item"   separator=" union all ">   
+		select  sys_guid(), #{item.groupOutputParamsId,jdbcType=VARCHAR}, #{item.outputEnParam1,jdbcType=VARCHAR},
+      #{item.outputCnParam1,jdbcType=VARCHAR}, #{item.outputParamType1,jdbcType=VARCHAR}, #{item.operator1,jdbcType=VARCHAR}, 
+      #{item.outputEnParam2,jdbcType=VARCHAR}, #{item.outputCnParam2,jdbcType=VARCHAR}, #{item.outputParamType2,jdbcType=VARCHAR}, 
+      #{item.operator2,jdbcType=VARCHAR}, #{item.outputEnParam3,jdbcType=VARCHAR}, #{item.outputCnParam3,jdbcType=VARCHAR}, 
+      #{item.outputParamType3,jdbcType=VARCHAR},#{item.outputParamOrigin1,jdbcType=VARCHAR},#{item.outputParamOrigin2,jdbcType=VARCHAR},
+      #{item.outputParamOrigin3,jdbcType=VARCHAR}
+	  from  dual   
+	</foreach>  
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysrulegroupoutputparams.model.CwmRuleGroupOutputParams">
+    update CWM_RULE_GROUP_OUTPUT_PARAMS
+    set GROUP_OUTPUT_PARAMS_ID = #{groupOutputParamsId,jdbcType=VARCHAR},
+      OUTPUT_EN_PARAM_1 = #{outputEnParam1,jdbcType=VARCHAR},
+      OUTPUT_CN_PARAM_1 = #{outputCnParam1,jdbcType=VARCHAR},
+      OUTPUT_PARAM_TYPE_1 = #{outputParamType1,jdbcType=VARCHAR},
+      OPERATOR_1 = #{operator1,jdbcType=VARCHAR},
+      OUTPUT_EN_PARAM_2 = #{outputEnParam2,jdbcType=VARCHAR},
+      OUTPUT_CN_PARAM_2 = #{outputCnParam2,jdbcType=VARCHAR},
+      OUTPUT_PARAM_TYPE_2 = #{outputParamType2,jdbcType=VARCHAR},
+      OPERATOR_2 = #{operator2,jdbcType=VARCHAR},
+      OUTPUT_EN_PARAM_3 = #{outputEnParam3,jdbcType=VARCHAR},
+      OUTPUT_CN_PARAM_3 = #{outputCnParam3,jdbcType=VARCHAR},
+      OUTPUT_PARAM_TYPE_3 = #{outputParamType3,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

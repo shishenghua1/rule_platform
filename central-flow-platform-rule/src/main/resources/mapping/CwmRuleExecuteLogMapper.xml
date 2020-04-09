@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysruleexcutelog.mapper.CwmRuleExecuteLogMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysruleexcutelog.model.CwmRuleExecuteLog">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="CALLER_NAME" jdbcType="VARCHAR" property="callerName" />
+    <result column="CALLER_FLAG" jdbcType="VARCHAR" property="callerFlag" />
+    <result column="RULE_TYPE" jdbcType="VARCHAR" property="ruleType" />
+    <result column="RULE_ID" jdbcType="VARCHAR" property="ruleId" />
+    <result column="RULE_NAME" jdbcType="VARCHAR" property="ruleName" />
+    <result column="INPUT_PARAM" jdbcType="VARCHAR" property="inputParam" />
+    <result column="OUTPUT_PARAM_RESULT" jdbcType="VARCHAR" property="outputParamResult" />
+    <result column="OUTPUT_PARAM_DESC" jdbcType="VARCHAR" property="outputParamDesc" />
+    <result column="EXECUTE_TIME" jdbcType="VARCHAR" property="executeTime" />
+    <result column="RULE_ID_REL" jdbcType="VARCHAR" property="ruleIdRel" />
+    <result column="RULE_FLAG" jdbcType="VARCHAR" property="ruleFlag" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, CALLER_NAME, CALLER_FLAG, RULE_TYPE, RULE_ID, RULE_NAME, INPUT_PARAM, OUTPUT_PARAM_RESULT, 
+    OUTPUT_PARAM_DESC, EXECUTE_TIME, RULE_ID_REL, RULE_FLAG, CREATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_EXECUTE_LOG
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from CWM_RULE_EXECUTE_LOG
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysruleexcutelog.model.CwmRuleExecuteLog">
+    insert into CWM_RULE_EXECUTE_LOG (ID, CALLER_NAME, CALLER_FLAG, 
+      RULE_TYPE, RULE_ID, RULE_NAME, 
+      INPUT_PARAM, OUTPUT_PARAM_RESULT, OUTPUT_PARAM_DESC, 
+      EXECUTE_TIME, RULE_ID_REL, RULE_FLAG, 
+      CREATE_TIME)
+    values (#{id,jdbcType=VARCHAR}, #{callerName,jdbcType=VARCHAR}, #{callerFlag,jdbcType=VARCHAR}, 
+      #{ruleType,jdbcType=VARCHAR}, #{ruleId,jdbcType=VARCHAR}, #{ruleName,jdbcType=VARCHAR}, 
+      #{inputParam,jdbcType=VARCHAR}, #{outputParamResult,jdbcType=VARCHAR}, #{outputParamDesc,jdbcType=VARCHAR}, 
+      #{executeTime,jdbcType=VARCHAR}, #{ruleIdRel,jdbcType=VARCHAR}, #{ruleFlag,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysruleexcutelog.model.CwmRuleExecuteLog">
+    update CWM_RULE_EXECUTE_LOG
+    set CALLER_NAME = #{callerName,jdbcType=VARCHAR},
+      CALLER_FLAG = #{callerFlag,jdbcType=VARCHAR},
+      RULE_TYPE = #{ruleType,jdbcType=VARCHAR},
+      RULE_ID = #{ruleId,jdbcType=VARCHAR},
+      RULE_NAME = #{ruleName,jdbcType=VARCHAR},
+      INPUT_PARAM = #{inputParam,jdbcType=VARCHAR},
+      OUTPUT_PARAM_RESULT = #{outputParamResult,jdbcType=VARCHAR},
+      OUTPUT_PARAM_DESC = #{outputParamDesc,jdbcType=VARCHAR},
+      EXECUTE_TIME = #{executeTime,jdbcType=VARCHAR},
+      RULE_ID_REL = #{ruleIdRel,jdbcType=VARCHAR},
+      RULE_FLAG = #{ruleFlag,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+   <insert id="batchInsert" parameterType="java.util.List" >
+	 insert into CWM_RULE_EXECUTE_LOG (ID, CALLER_NAME, CALLER_FLAG, 
+      RULE_TYPE, RULE_ID, RULE_NAME, 
+      INPUT_PARAM, OUTPUT_PARAM_RESULT, OUTPUT_PARAM_DESC, 
+      EXECUTE_TIME, RULE_ID_REL, RULE_FLAG, 
+      CREATE_TIME) 
+	 <foreach  collection="list" item="item"   separator=" union all ">   
+		select  sys_guid(), #{item.callerName,jdbcType=VARCHAR}, #{item.callerFlag,jdbcType=VARCHAR}, 
+      #{item.ruleType,jdbcType=VARCHAR}, #{item.ruleId,jdbcType=VARCHAR}, #{item.ruleName,jdbcType=VARCHAR}, 
+      #{item.inputParam,jdbcType=VARCHAR}, #{item.outputParamResult,jdbcType=VARCHAR}, #{item.outputParamDesc,jdbcType=VARCHAR}, 
+      #{item.executeTime,jdbcType=VARCHAR}, #{item.ruleIdRel,jdbcType=VARCHAR}, #{item.ruleFlag,jdbcType=VARCHAR}, 
+      #{item.createTime,jdbcType=TIMESTAMP} 
+	  from  dual   
+	</foreach>  
+  </insert>
+</mapper>

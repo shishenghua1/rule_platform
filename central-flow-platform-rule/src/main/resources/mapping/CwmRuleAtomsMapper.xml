@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysruleatoms.mapper.CwmRuleAtomsMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysruleatoms.model.CwmRuleAtoms">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="ATOM_NAME" jdbcType="VARCHAR" property="atomName" />
+    <result column="ATOM_DESCRIPTION" jdbcType="VARCHAR" property="atomDescription" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="INPUT_EN_PARAM_1" jdbcType="VARCHAR" property="inputEnParam1" />
+    <result column="INPUT_CN_PARAM_1" jdbcType="VARCHAR" property="inputCnParam1" />
+    <result column="INPUT_PARAM_TYPE_1" jdbcType="VARCHAR" property="inputParamType1" />
+    <result column="OPERATOR_1" jdbcType="VARCHAR" property="operator1" />
+    <result column="INPUT_EN_PARAM_2" jdbcType="VARCHAR" property="inputEnParam2" />
+    <result column="INPUT_CN_PARAM_2" jdbcType="VARCHAR" property="inputCnParam2" />
+    <result column="INPUT_PARAM_TYPE_2" jdbcType="VARCHAR" property="inputParamType2" />
+    <result column="OPERATOR_2" jdbcType="VARCHAR" property="operator2" />
+    <result column="INPUT_EN_PARAM_3" jdbcType="VARCHAR" property="inputEnParam3" />
+    <result column="INPUT_CN_PARAM_3" jdbcType="VARCHAR" property="inputCnParam3" />
+    <result column="INPUT_PARAM_TYPE_3" jdbcType="VARCHAR" property="inputParamType3" />
+    <result column="INPUT_PARAM_ORIGIN_1" jdbcType="VARCHAR" property="inputParamOrigin1" />
+    <result column="INPUT_PARAM_ORIGIN_2" jdbcType="VARCHAR" property="inputParamOrigin2" />
+    <result column="INPUT_PARAM_ORIGIN_3" jdbcType="VARCHAR" property="inputParamOrigin3" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, ATOM_NAME, ATOM_DESCRIPTION, DELETED, CREATE_USER_ID, CREATE_TIME, INPUT_EN_PARAM_1,
+    INPUT_CN_PARAM_1, INPUT_PARAM_TYPE_1, OPERATOR_1, INPUT_EN_PARAM_2, INPUT_CN_PARAM_2,
+    INPUT_PARAM_TYPE_2, OPERATOR_2, INPUT_EN_PARAM_3, INPUT_CN_PARAM_3, INPUT_PARAM_TYPE_3,
+    INPUT_PARAM_ORIGIN_1,INPUT_PARAM_ORIGIN_2,INPUT_PARAM_ORIGIN_3
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CWM_RULE_ATOMS
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByAtomIds" resultMap="BaseResultMap" parameterType="java.util.List">
+        select <include refid="Base_Column_List" /> from CWM_RULE_ATOMS
+        where id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+          #{item}
+      </foreach>
+  </select>
+
+  <select id="selectByGroupId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select * from CWM_RULE_ATOMS where id in (select rule_id_rel from CWM_RULE_GROUP_REL where node_type = 'atomRule'
+		start with parent_node_id= #{groupId,jdbcType=VARCHAR}  connect by prior rule_id_rel=parent_node_id)
+  </select>
+  
+  <select id="selectAllAtoms" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select * from CWM_RULE_ATOMS where deleted = '0' 
+  </select>
+
+  <delete id="delByAtomIds" parameterType="java.util.List" >
+    delete from cwm_rule_atoms
+    where id in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String">
+    update cwm_rule_atoms set deleted = 1
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysruleatoms.model.CwmRuleAtoms">
+    insert into CWM_RULE_ATOMS (ID, ATOM_NAME, ATOM_DESCRIPTION,
+      DELETED, CREATE_USER_ID, CREATE_TIME,
+      INPUT_EN_PARAM_1, INPUT_CN_PARAM_1, INPUT_PARAM_TYPE_1,
+      OPERATOR_1, INPUT_EN_PARAM_2, INPUT_CN_PARAM_2,
+      INPUT_PARAM_TYPE_2, OPERATOR_2, INPUT_EN_PARAM_3,
+      INPUT_CN_PARAM_3, INPUT_PARAM_TYPE_3,INPUT_PARAM_ORIGIN_1,INPUT_PARAM_ORIGIN_2,INPUT_PARAM_ORIGIN_3)
+    values (#{id,jdbcType=VARCHAR}, #{atomName,jdbcType=VARCHAR}, #{atomDescription,jdbcType=VARCHAR},
+      #{deleted,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{inputEnParam1,jdbcType=VARCHAR}, #{inputCnParam1,jdbcType=VARCHAR}, #{inputParamType1,jdbcType=VARCHAR},
+      #{operator1,jdbcType=VARCHAR}, #{inputEnParam2,jdbcType=VARCHAR}, #{inputCnParam2,jdbcType=VARCHAR},
+      #{inputParamType2,jdbcType=VARCHAR}, #{operator2,jdbcType=VARCHAR}, #{inputEnParam3,jdbcType=VARCHAR},
+      #{inputCnParam3,jdbcType=VARCHAR}, #{inputParamType3,jdbcType=VARCHAR},#{inputParamOrigin1,jdbcType=VARCHAR},
+      #{inputParamOrigin2,jdbcType=VARCHAR},#{inputParamOrigin3,jdbcType=VARCHAR})
+  </insert>
+
+  <insert id="batchInsert" parameterType="java.util.List" >
+	 insert into CWM_RULE_ATOMS   (ID, ATOM_NAME, ATOM_DESCRIPTION,
+      DELETED, CREATE_USER_ID, CREATE_TIME,
+      INPUT_EN_PARAM_1, INPUT_CN_PARAM_1, INPUT_PARAM_TYPE_1,
+      OPERATOR_1, INPUT_EN_PARAM_2, INPUT_CN_PARAM_2,
+      INPUT_PARAM_TYPE_2, OPERATOR_2, INPUT_EN_PARAM_3,
+      INPUT_CN_PARAM_3, INPUT_PARAM_TYPE_3,INPUT_PARAM_ORIGIN_1,
+      INPUT_PARAM_ORIGIN_2,INPUT_PARAM_ORIGIN_3)
+	 <foreach  collection="list" item="item"   separator=" union all ">
+		select  #{item.id,jdbcType=VARCHAR}, #{item.atomName,jdbcType=VARCHAR}, #{item.atomDescription,jdbcType=VARCHAR},
+      0, #{item.createUserId,jdbcType=VARCHAR},sysdate,
+      #{item.inputEnParam1,jdbcType=VARCHAR}, #{item.inputCnParam1,jdbcType=VARCHAR}, #{item.inputParamType1,jdbcType=VARCHAR},
+      #{item.operator1,jdbcType=VARCHAR}, #{item.inputEnParam2,jdbcType=VARCHAR}, #{item.inputCnParam2,jdbcType=VARCHAR},
+      #{item.inputParamType2,jdbcType=VARCHAR}, #{item.operator2,jdbcType=VARCHAR}, #{item.inputEnParam3,jdbcType=VARCHAR},
+      #{item.inputCnParam3,jdbcType=VARCHAR}, #{item.inputParamType3,jdbcType=VARCHAR},#{item.inputParamOrigin1,jdbcType=VARCHAR},
+      #{item.inputParamOrigin2,jdbcType=VARCHAR},#{item.inputParamOrigin3,jdbcType=VARCHAR}
+	  from  dual   
+	</foreach>  
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysruleatoms.model.CwmRuleAtoms">
+    update CWM_RULE_ATOMS
+    set ATOM_NAME = #{atomName,jdbcType=VARCHAR},
+      ATOM_DESCRIPTION = #{atomDescription,jdbcType=VARCHAR},
+      INPUT_EN_PARAM_1 = #{inputEnParam1,jdbcType=VARCHAR},
+      INPUT_CN_PARAM_1 = #{inputCnParam1,jdbcType=VARCHAR},
+      INPUT_PARAM_TYPE_1 = #{inputParamType1,jdbcType=VARCHAR},
+      OPERATOR_1 = #{operator1,jdbcType=VARCHAR},
+      INPUT_EN_PARAM_2 = #{inputEnParam2,jdbcType=VARCHAR},
+      INPUT_CN_PARAM_2 = #{inputCnParam2,jdbcType=VARCHAR},
+      INPUT_PARAM_TYPE_2 = #{inputParamType2,jdbcType=VARCHAR},
+      OPERATOR_2 = #{operator2,jdbcType=VARCHAR},
+      INPUT_EN_PARAM_3 = #{inputEnParam3,jdbcType=VARCHAR},
+      INPUT_CN_PARAM_3 = #{inputCnParam3,jdbcType=VARCHAR},
+      INPUT_PARAM_TYPE_3 = #{inputParamType3,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

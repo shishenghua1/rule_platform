@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysdatadict.mapper.CwmDataDictMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysdatadict.model.CwmDataDict">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="PARENT_DICT_ID" jdbcType="VARCHAR" property="parentDictId" />
+    <result column="DICT_ID" jdbcType="VARCHAR" property="dictId" />
+    <result column="DICT_TYPE" jdbcType="VARCHAR" property="dictType" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="DICT_CN_NAME" jdbcType="VARCHAR" property="dictCnName" />
+    <result column="DICT_EN_NAME" jdbcType="VARCHAR" property="dictEnName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, PARENT_DICT_ID, DICT_ID,  DICT_TYPE, DELETED, CREATE_TIME, CREATE_USER_ID,DICT_CN_NAME,DICT_EN_NAME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cwm_rule_data_dict
+    where ID = #{id,jdbcType=VARCHAR}  and deleted!=1
+  </select>
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String">
+    update  cwm_rule_data_dict set deleted = 1
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysdatadict.model.CwmDataDict">
+    insert into cwm_rule_data_dict (id, parent_dict_id, dict_id,
+      dict_type, deleted, create_time, create_user_id,dict_cn_name,dict_en_name)
+    values (#{id,jdbcType=VARCHAR}, #{parentDictId,jdbcType=VARCHAR}, 
+      #{dictId,jdbcType=VARCHAR}, #{dictType,jdbcType=VARCHAR}, 0, 
+      sysdate, #{createUserId,jdbcType=VARCHAR},#{dictCnName,jdbcType=VARCHAR},#{dictEnName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="batchInsert" parameterType="java.util.List" >
+    insert into cwm_rule_data_dict (id, parent_dict_id, dict_id,
+    dict_type, deleted, create_time, create_user_id,dict_cn_name,dict_en_name)
+    <foreach  collection="list" item="item"   separator=" union all ">
+      select  sys_guid(), #{item.parentDictId,jdbcType=VARCHAR},
+      sys_guid(), #{item.dictType,jdbcType=VARCHAR}, 0,
+      sysdate, #{item.createUserId,jdbcType=VARCHAR},#{item.dictCnName,jdbcType=VARCHAR},#{item.dictEnName,jdbcType=VARCHAR}
+      from  dual
+    </foreach>
+  </insert>
+
+  <update id="batchUpdate" parameterType="java.util.List">
+    update cwm_rule_data_dict
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="parent_dict_id =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.parentDictId!=null">
+            when id=#{item.id} then #{item.parentDictId}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="dict_id =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.dictId!=null">
+            when id=#{item.id} then #{item.dictId}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="dict_type =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.dictType!=null">
+            when id=#{item.id} then #{item.dictType}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="dict_cn_name =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.dictCnName!=null">
+            when id=#{item.id} then #{item.dictCnName}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="dict_en_name =case" suffix="end,">
+        <foreach collection="list" item="item">
+          <if test="item.dictEnName!=null">
+            when id=#{item.id} then #{item.dictEnName}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    <where>
+      <foreach collection="list" separator="or" item="item">
+        id=#{item.id}
+      </foreach>
+    </where>
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysdatadict.model.CwmDataDict">
+    update cwm_rule_data_dict
+    set PARENT_DICT_ID = #{parentDictId,jdbcType=VARCHAR},
+      DICT_ID = #{dictId,jdbcType=VARCHAR},
+      DICT_TYPE = #{dictType,jdbcType=VARCHAR},
+      DICT_CN_NAME = #{dictCnName,jdbcType=VARCHAR},
+      DICT_EN_NAME = #{dictEnName,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectByCondition" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cwm_rule_data_dict
+    where  deleted !='1' and PARENT_DICT_ID = #{parentDictId,jdbcType=VARCHAR}
+    <if test="dictCnName != null and dictCnName!=''">
+        and DICT_CN_NAME like '%'||#{dictCnName,jdbcType=VARCHAR}||'%'
+    </if>
+    order by create_time
+  </select>
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysrulegroupoutputrel.mapper.CwmRuleGroupOutputRelMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysrulegroupoutputrel.model.CwmRuleGroupOutputRel">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="GROUP_OUTPUT_ID" jdbcType="VARCHAR" property="groupOutputId" />
+    <result column="GROUP_ID_REL" jdbcType="VARCHAR" property="groupIdRel" />
+    <result column="GROUP_OUTPUT_RESULT_REL" jdbcType="VARCHAR" property="groupOutputResultRel" />
+    <result column="GROUP_OUTPUT_EXPLAIN_REL" jdbcType="VARCHAR" property="groupOutputExplainRel" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, GROUP_OUTPUT_ID, GROUP_ID_REL, GROUP_OUTPUT_RESULT_REL, GROUP_OUTPUT_EXPLAIN_REL, 
+    DELETED, CREATE_TIME, CREATE_USER_ID
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cwm_rule_group_output_rel
+    where id = #{id,jdbcType=VARCHAR} and deleted!=1
+  </select>
+
+  <select id="selectByOutputId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUP_OUTPUT_REL
+    where GROUP_OUTPUT_ID = #{outputId,jdbcType=VARCHAR} 
+   	and deleted != '1' 
+  </select>
+
+  <select id="selectByGroupId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    rel.*
+    from CWM_RULE_GROUP_OUTPUT_REL rel,CWM_RULE_GROUP_OUTPUT output,CWM_RULE_GROUPS gro 
+    where output.group_id = gro.id 
+    and output.id = rel.group_output_id  
+    and gro.id = #{groupId,jdbcType=VARCHAR} 
+   	and rel.deleted != '1'  
+   	and output.GROUP_OUTPUT_RESULT = #{result,jdbcType=VARCHAR} 
+  </select>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String">
+    update  cwm_rule_group_output_rel set deleted = 1    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="deleteByOutputId" parameterType="java.lang.String">
+    update  cwm_rule_group_output_rel set deleted = 1  where group_output_id = #{outputId,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="deleteByOutputIds" parameterType="java.util.List" >
+    delete from cwm_rule_group_output_rel
+    where group_output_id in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysrulegroupoutputrel.model.CwmRuleGroupOutputRel">
+    insert into CWM_RULE_GROUP_OUTPUT_REL (ID, GROUP_OUTPUT_ID, GROUP_ID_REL, 
+      GROUP_OUTPUT_RESULT_REL, GROUP_OUTPUT_EXPLAIN_REL, 
+      DELETED, CREATE_TIME, CREATE_USER_ID
+      )
+    values (#{id,jdbcType=VARCHAR}, #{groupOutputId,jdbcType=VARCHAR}, #{groupIdRel,jdbcType=VARCHAR}, 
+      #{groupOutputResultRel,jdbcType=VARCHAR}, #{groupOutputExplainRel,jdbcType=VARCHAR}, 
+      #{deleted,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into cwm_rule_group_output_rel (id, group_output_id, group_id_rel, 
+      group_output_result_rel, group_output_explain_rel, 
+      deleted, create_time, create_user_id)
+    <foreach  collection="list" item="item"   separator=" union all ">   
+   			select
+   			sys_guid(), 
+   			#{item.groupOutputId},
+   			#{item.groupIdRel},
+   			#{item.groupOutputResultRel},
+   			#{item.groupOutputExplainRel},
+   			0,
+   			sysdate, 
+      		#{item.createUserId}
+      		from dual
+    </foreach>
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysrulegroupoutputrel.model.CwmRuleGroupOutputRel">
+    update CWM_RULE_GROUP_OUTPUT_REL
+    set GROUP_OUTPUT_ID = #{groupOutputId,jdbcType=VARCHAR},
+      GROUP_ID_REL = #{groupIdRel,jdbcType=VARCHAR},
+      GROUP_OUTPUT_RESULT_REL = #{groupOutputResultRel,jdbcType=VARCHAR},
+      GROUP_OUTPUT_EXPLAIN_REL = #{groupOutputExplainRel,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysruleuserroles.mapper.CwmRuleUserRolesMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysruleuserroles.model.CwmRuleUserRoles">
+    <result column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="ROLE_ID" jdbcType="VARCHAR" property="roleId" />
+    <result column="ROLE_NAME" jdbcType="VARCHAR" property="roleName" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+    <result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+  </resultMap>
+  
+	<select id="selectByUserId"  parameterType="java.lang.String"  resultType="java.lang.String">
+		select ROLE_ID from  CWM_RULE_USER_ROLES 
+		where user_id = #{userId,jdbcType=VARCHAR} and deleted != '1'
+	</select>
+</mapper>

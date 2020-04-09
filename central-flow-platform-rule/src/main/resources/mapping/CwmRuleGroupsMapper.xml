@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysrulegroups.mapper.CwmRuleGroupsMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysrulegroups.model.CwmRuleGroups">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="GROUP_NAME" jdbcType="VARCHAR" property="groupName" />
+    <result column="MODULE_ID" jdbcType="VARCHAR" property="moduleId" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="EFFECTIVE_DATE" jdbcType="TIMESTAMP" property="effectiveDate" />
+    <result column="EXPIRING_DATE" jdbcType="TIMESTAMP" property="expiringDate" />
+    <result column="IS_REPEAT" jdbcType="VARCHAR" property="isRepeat" />
+    <result column="GROUP_DESCRIPTION" jdbcType="VARCHAR" property="groupDescription" />
+    <result column="GROUP_TYPE" jdbcType="VARCHAR" property="groupType" />
+    <result column="FIRST_SUBSET_IS_END" jdbcType="VARCHAR" property="firstSubsetIsEnd" />
+    <result column="DRAFT_FLAG" jdbcType="VARCHAR" property="draftFlag" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, GROUP_NAME, MODULE_ID, DELETED, CREATE_USER_ID, CREATE_TIME,
+    EFFECTIVE_DATE,EXPIRING_DATE,IS_REPEAT,GROUP_DESCRIPTION,GROUP_TYPE,FIRST_SUBSET_IS_END,DRAFT_FLAG
+  </sql>
+
+  <select id="isExist" parameterType="java.lang.String" resultType="Integer">
+    select count(*) from cwm_rule_groups
+    where group_name = #{groupName} and deleted !='1' and module_id= #{moduleId}
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUPS
+    where ID = #{id,jdbcType=VARCHAR}
+  </select> 
+  
+  <select id="selectEnableRuleByRuleId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUPS
+    where ID = #{id,jdbcType=VARCHAR} and STATUS = 'enable' 
+  </select>
+
+  <select id="queryByGroupIds" resultMap="BaseResultMap">
+	  	select id,group_name,group_description	 from cwm_rule_groups 
+		where id in
+		<foreach collection="array" index="index" item="item" open="(" separator="," close=")">  
+			#{item}  
+		</foreach>  
+		order by create_time
+  </select>
+  
+  <select id="selectByCondition" resultMap="BaseResultMap">
+  	select crg.id,crg.group_name,crg.group_description
+    from cwm_rule_groups crg,cwm_rule_apps cra,cwm_rule_modules crm
+    where  crg.deleted !='1' 
+    <if test="appName != null and appName !=''">
+       and cra.app_name = #{appName}
+    </if>
+    <if test="moduleName != null and moduleName !=''">
+       and crm.module_name = #{moduleName}
+    </if>
+    <if test="moduleId != null and moduleId !=''">
+       and crg.module_id = #{moduleId}
+    </if>
+    <if test="groupType != null and groupType !=''">
+       and crg.group_type = #{groupType}
+    </if>
+    <if test="draftFlag != null and draftFlag !=''">
+       and crg.draft_Flag = #{draftFlag}
+    </if>
+    and cra.id = crm.app_id and crm.id = crg.module_id
+  </select>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String">
+    update  cwm_rule_groups set deleted=1 where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysrulegroups.model.CwmRuleGroups">
+    insert into CWM_RULE_GROUPS (ID, GROUP_NAME, 
+      MODULE_ID, DELETED, CREATE_USER_ID, 
+      CREATE_TIME,EFFECTIVE_DATE,EXPIRING_DATE,IS_REPEAT,GROUP_DESCRIPTION,GROUP_TYPE,FIRST_SUBSET_IS_END,DRAFT_FLAG)
+    values (#{id,jdbcType=VARCHAR}, #{groupName,jdbcType=VARCHAR},  
+      #{moduleId,jdbcType=VARCHAR},0, #{createUserId,jdbcType=VARCHAR}, 
+      sysdate,#{effectiveDate,jdbcType=TIMESTAMP},#{expiringDate,jdbcType=TIMESTAMP},#{isRepeat,jdbcType=VARCHAR},
+      #{groupDescription,jdbcType=VARCHAR},#{groupType,jdbcType=VARCHAR},#{firstSubsetIsEnd,jdbcType=VARCHAR},#{draftFlag,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysrulegroups.model.CwmRuleGroups">
+    update CWM_RULE_GROUPS
+    <set>
+      <if test="groupName != null and groupName !=''">
+        GROUP_NAME = #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="groupDescription != null and groupDescription != ''">
+        GROUP_DESCRIPTION = #{groupDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveDate != null">
+        EFFECTIVE_DATE = #{effectiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expiringDate != null">
+        EXPIRING_DATE = #{expiringDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isRepeat != null and isRepeat !=''">
+        IS_REPEAT = #{isRepeat,jdbcType=VARCHAR},
+      </if>
+      <if test="firstSubsetIsEnd != null and firstSubsetIsEnd !=''">
+        FIRST_SUBSET_IS_END = #{firstSubsetIsEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="draftFlag != null and draftFlag !=''">
+        DRAFT_FLAG = #{draftFlag,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectByModuleId"  resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from CWM_RULE_GROUPS
+    where MODULE_ID = #{moduleId,jdbcType=VARCHAR} and deleted != 1
+    and group_type = #{groupType,jdbcType=VARCHAR}
+    order by create_time
+  </select>
+
+  <select id="isExistInAssembling" parameterType="java.lang.String" resultType="Integer">
+  	select count(*)
+      from cwm_rule_groups
+     where id in (select parent_node_id
+                    from CWM_RULE_GROUP_REL
+                   where CONNECT_BY_ISLEAF = '1'
+                   START WITH rule_id_rel=#{id,jdbcType=VARCHAR}
+                  CONNECT BY PRIOR parent_node_id = rule_id_rel)
+       and deleted = '0'
+       and group_type = 'assembling'
+  </select>
+
+  <select id="getAllRuleGroups" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUPS
+    where DELETED != '1' 
+  </select>
+  
+  <select id="getAllRuleGroupsNonDraft" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_GROUPS
+    where DELETED != '1' and DRAFT_FLAG = '1'  and STATUS = 'enable' 
+  </select>
+  
+</mapper>

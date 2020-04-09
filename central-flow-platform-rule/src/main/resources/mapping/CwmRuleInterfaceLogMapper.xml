@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysruleinterfacelog.mapper.CwmRuleInterfaceLogMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysruleinterfacelog.model.CwmRuleInterfaceLog">
+    <result column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="RULE_ID" jdbcType="VARCHAR" property="ruleId" />
+    <result column="INTERFACE_EN_NAME" jdbcType="VARCHAR" property="interfaceEnName" />
+    <result column="INTERFACE_CN_NAME" jdbcType="VARCHAR" property="interfaceCnName" />
+    <result column="INPUT_PARAMS" jdbcType="VARCHAR" property="inputParams" />
+    <result column="OUTPUT_PARAMS" jdbcType="VARCHAR" property="outputParams" />
+    <result column="EXCEPTION_MSG" jdbcType="VARCHAR" property="exceptionMsg" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysruleinterfacelog.model.CwmRuleInterfaceLog">
+    insert into CWM_RULE_INTERFACE_LOG (ID, RULE_ID, INTERFACE_EN_NAME, INTERFACE_CN_NAME, 
+      INPUT_PARAMS, OUTPUT_PARAMS, EXCEPTION_MSG, 
+      CREATE_TIME)
+    values (#{id,jdbcType=VARCHAR},#{ruleId,jdbcType=VARCHAR}, #{interfaceEnName,jdbcType=VARCHAR}, #{interfaceCnName,jdbcType=VARCHAR}, 
+      #{inputParams,jdbcType=VARCHAR}, #{outputParams,jdbcType=VARCHAR}, #{exceptionMsg,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysdatamodule.mapper.CwmDataModuleMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysdatamodule.model.CwmDataModule">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="DATA_MODULE" jdbcType="VARCHAR" property="dataModule" />
+    <result column="DATA_VERSION" jdbcType="VARCHAR" property="dataVersion" />
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="DATA_TYPE" jdbcType="VARCHAR" property="dataType" />
+    <result column="MODULE_ID" jdbcType="VARCHAR" property="moduleId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, DATA_MODULE, DATA_VERSION,DESCRIPTION, DELETED, CREATE_TIME, CREATE_USER_ID,DATA_TYPE,MODULE_ID
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cwm_rule_data_module
+    where ID = #{id,jdbcType=VARCHAR} and deleted !='1'
+  </select>
+
+  <select id="isExist" parameterType="java.lang.String" resultType="Integer">
+    select count(*) from cwm_rule_data_module
+    where data_module = #{dataModule} and deleted !='1' and module_id= #{moduleId}
+  </select>
+
+  <select id="selectByDataModule" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_DATA_MODULE
+    where  deleted !='1'
+    <if test="dataModule != null">
+        and DATA_MODULE like '%'||#{dataModule,jdbcType=VARCHAR}||'%'
+    </if>
+  </select>
+
+  <select id="selectByModuleId" parameterType="java.lang.String" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_DATA_MODULE where MODULE_ID = #{moduleId,jdbcType=VARCHAR} and deleted !='1'
+    order by create_time
+  </select>
+
+  <select id="selectByCondition"  resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_DATA_MODULE where MODULE_ID = #{moduleId,jdbcType=VARCHAR}
+    and DATA_TYPE = #{dataType,jdbcType=VARCHAR} and deleted !='1' order by create_time
+  </select>
+
+  <select id="findAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_DATA_MODULE
+    where  deleted !='1'
+  </select>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String">
+    update CWM_RULE_DATA_MODULE set DELETED = 1
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysdatamodule.model.CwmDataModule">
+    insert into CWM_RULE_DATA_MODULE (ID, DATA_MODULE, DATA_VERSION, 
+      DESCRIPTION, DELETED, CREATE_TIME, CREATE_USER_ID,DATA_TYPE,MODULE_ID)
+    values (#{id,jdbcType=VARCHAR}, #{dataModule,jdbcType=VARCHAR}, #{dataVersion,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, 0,sysdate, 
+      #{createUserId,jdbcType=VARCHAR},#{dataType,jdbcType=VARCHAR},#{moduleId,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysdatamodule.model.CwmDataModule">
+    update CWM_RULE_DATA_MODULE
+    <set>
+      <if test="dataModule != null and dataModule !=''">
+        DATA_MODULE = #{dataModule,jdbcType=VARCHAR},
+      </if>
+      <if test="dataVersion != null and dataVersion !=''">
+        DATA_VERSION = #{dataVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null and description !=''">
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null and createUserId !=''">
+        CREATE_USER_ID = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="dataType != null and dataType != ''">
+        DATA_TYPE = #{dataType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

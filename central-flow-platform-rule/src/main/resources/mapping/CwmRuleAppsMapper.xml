@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysruleapps.mapper.CwmRuleAppsMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysruleapps.model.CwmRuleApps">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="APP_NAME" jdbcType="VARCHAR" property="appName" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, APP_NAME,  DELETED, CREATE_USER_ID, CREATE_TIME
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_APPS
+    where ID = #{id,jdbcType=VARCHAR} and deleted !='1'
+  </select>
+  
+    <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_APPS
+    where CREATE_USER_ID = #{createUserId,jdbcType=VARCHAR} and deleted !='1'
+  </select>
+  
+  <select id="selectByAppName" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_APPS
+    where deleted !='1' 
+    <if test="appName != null and appName !=''">
+        and APP_NAME = #{appName,jdbcType=VARCHAR}
+    </if>
+    order by create_time
+  </select>
+  
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String">
+    update  CWM_RULE_APPS
+    set DELETED = 1
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysruleapps.model.CwmRuleApps">
+    insert into CWM_RULE_APPS (ID, APP_NAME, 
+      DELETED, CREATE_USER_ID, CREATE_TIME
+      )
+    values (#{id,jdbcType=VARCHAR}, #{appName,jdbcType=VARCHAR}, 
+      0, #{createUserId,jdbcType=VARCHAR}, sysdate
+      )
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysruleapps.model.CwmRuleApps">
+    update CWM_RULE_APPS
+    <set>
+      <if test="appName != null and appName!=''">
+        APP_NAME = #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null and createUserId!=''">
+        CREATE_USER_ID = #{createUserId,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="isExist" parameterType="java.lang.String" resultType="Integer">
+    select count(*) from cwm_rule_apps
+    where app_name = #{appName} and deleted !='1'
+  </select>
+
+</mapper>

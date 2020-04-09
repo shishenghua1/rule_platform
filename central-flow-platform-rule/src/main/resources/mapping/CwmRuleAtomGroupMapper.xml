@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysruleatomgroup.mapper.CwmRuleAtomGroupMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysruleatomgroup.model.CwmRuleAtomGroup">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="ATOM_GROUP_NAME" jdbcType="VARCHAR" property="atomGroupName" />
+    <result column="ATOM_GROUP_DESCRIPTION" jdbcType="VARCHAR" property="atomGroupDescription" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, ATOM_GROUP_NAME, ATOM_GROUP_DESCRIPTION, DELETED, CREATE_USER_ID, CREATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_ATOM_GROUP
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="findAll" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_ATOM_GROUP
+    where DELETED != '1'
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from CWM_RULE_ATOM_GROUP
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysruleatomgroup.model.CwmRuleAtomGroup">
+    insert into CWM_RULE_ATOM_GROUP (ID, ATOM_GROUP_NAME, ATOM_GROUP_DESCRIPTION, 
+      DELETED, CREATE_USER_ID, CREATE_TIME
+      )
+    values (#{id,jdbcType=VARCHAR}, #{atomGroupName,jdbcType=VARCHAR}, #{atomGroupDescription,jdbcType=VARCHAR}, 
+      #{deleted,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysruleatomgroup.model.CwmRuleAtomGroup">
+    update CWM_RULE_ATOM_GROUP
+    set ATOM_GROUP_NAME = #{atomGroupName,jdbcType=VARCHAR},
+      ATOM_GROUP_DESCRIPTION = #{atomGroupDescription,jdbcType=VARCHAR},
+      DELETED = #{deleted,jdbcType=VARCHAR},
+      CREATE_USER_ID = #{createUserId,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

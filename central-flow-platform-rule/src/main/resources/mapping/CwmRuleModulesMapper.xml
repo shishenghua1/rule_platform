@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boco.eoms.rule.cwmsysrulemodules.mapper.CwmRuleModulesMapper">
+  <resultMap id="BaseResultMap" type="com.boco.eoms.rule.cwmsysrulemodules.model.CwmRuleModules">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="MODULE_NAME" jdbcType="VARCHAR" property="moduleName" />
+    <result column="PARENT_MODULE_ID" jdbcType="VARCHAR" property="parentModuleId" />
+    <result column="DELETED" jdbcType="VARCHAR" property="deleted" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="APP_ID" jdbcType="TIMESTAMP" property="appId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, MODULE_NAME, PARENT_MODULE_ID, DELETED, CREATE_USER_ID, CREATE_TIME,APP_ID
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_MODULES
+    where ID = #{id,jdbcType=VARCHAR} and deleted!=1
+  </select>
+
+  <select id="selectByAppIds" parameterType="java.util.List" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CWM_RULE_MODULES
+    where DELETED!='1' and APP_ID in 
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
+        #{item}  
+    </foreach>
+    order by create_time
+  </select>
+  
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String">
+    update cwm_rule_modules set deleted=1
+    where ID = #{moduleId,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.boco.eoms.rule.cwmsysrulemodules.model.CwmRuleModules">
+    insert into CWM_RULE_MODULES (ID, MODULE_NAME, PARENT_MODULE_ID, 
+      DELETED, CREATE_USER_ID, CREATE_TIME,APP_ID
+      )
+    values (#{id,jdbcType=VARCHAR}, #{moduleName,jdbcType=VARCHAR}, #{parentModuleId,jdbcType=VARCHAR}, 
+      0, #{createUserId,jdbcType=VARCHAR}, sysdate,
+      #{appId,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.boco.eoms.rule.cwmsysrulemodules.model.CwmRuleModules">
+    update CWM_RULE_MODULES
+    <set>
+      <if test="moduleName != null and moduleName != ''">
+        MODULE_NAME = #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentModuleId != null and parentModuleId!=''">
+        PARENT_MODULE_ID = #{parentModuleId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null and createUserId!=''">
+        CREATE_USER_ID = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null and appId !=''">
+        APP_ID = #{appId,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectByAppId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cwm_rule_modules
+    where app_id = #{appId,jdbcType=VARCHAR} and deleted!=1 order by create_time
+  </select>
+
+  <select id="isExist" parameterType="java.lang.String" resultType="Integer">
+    select count(*) from cwm_rule_modules
+    where app_id = #{appId} and deleted !='1' and module_name= #{moduleName}
+  </select>
+
+</mapper>
